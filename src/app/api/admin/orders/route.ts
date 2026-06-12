@@ -84,8 +84,14 @@ export async function GET(request: NextRequest) {
 
     await Promise.all(userIds.map(async id => {
       const { data: userData } = await supabase.auth.admin.getUserById(id)
+      const authUser = userData?.user
       const existing = customers.get(id) ?? { name: null, email: null }
-      customers.set(id, { ...existing, email: userData?.user?.email ?? null })
+      const metadataName = typeof authUser?.user_metadata?.name === "string" ? authUser.user_metadata.name : null
+      const emailPrefix = authUser?.email?.split("@")[0] ?? null
+      customers.set(id, {
+        name: existing.name ?? metadataName ?? emailPrefix,
+        email: authUser?.email ?? null,
+      })
     }))
   }
 
