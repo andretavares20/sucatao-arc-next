@@ -2009,6 +2009,10 @@ select {
   margin-top: 18px;
 }
 
+.utility-stats.cols-4 {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
 .utility-stats article,
 .utility-panel {
   border: 1px solid var(--line-soft);
@@ -4482,6 +4486,7 @@ button.utility-chip:focus-visible {
   }
 
   .utility-stats,
+  .utility-stats.cols-4,
   .utility-split {
     grid-template-columns: 1fr;
   }
@@ -4602,6 +4607,7 @@ button.utility-chip:focus-visible {
   .reward-strip,
   .dashboard-card-grid,
   .utility-stats,
+  .utility-stats.cols-4,
   .map-selector {
     grid-template-columns: 1fr;
   }
