@@ -11,33 +11,45 @@ export async function PATCH(request: NextRequest, { params }: { params: Promise<
 
   const update: Record<string, unknown> = {}
 
-  if (typeof body.code === "string" && body.code.trim()) update.code = body.code.trim().toUpperCase()
-
-  if (body.discount_percent !== undefined) {
-    const discountPercent = Number(body.discount_percent)
-    if (!Number.isFinite(discountPercent) || discountPercent <= 0 || discountPercent > 100) {
-      return NextResponse.json({ error: "Desconto deve ser um número entre 1 e 100." }, { status: 400 })
+  if (typeof body.code === "string" && body.code.trim()) {
+    const code = body.code.trim().toUpperCase()
+    if (code.length < 3) {
+      return NextResponse.json({ error: "Código deve ter pelo menos 3 caracteres." }, { status: 400 })
     }
-    update.discount_percent = discountPercent
+    update.code = code
   }
 
-  if (body.max_uses !== undefined) {
-    if (body.max_uses === null || body.max_uses === "") {
-      update.max_uses = null
+  const discountType = body.discount_type === "fixed" || body.discount_type === "percentage" ? body.discount_type : undefined
+  if (discountType) update.discount_type = discountType
+
+  if (body.discount !== undefined) {
+    const discount = Number(body.discount)
+    if (!Number.isFinite(discount) || discount <= 0) {
+      return NextResponse.json({ error: "Desconto deve ser maior que zero." }, { status: 400 })
+    }
+    if (discountType === "percentage" && discount > 100) {
+      return NextResponse.json({ error: "Desconto percentual não pode passar de 100%." }, { status: 400 })
+    }
+    update.discount = discount
+  }
+
+  if (body.usage_limit !== undefined) {
+    if (body.usage_limit === null || body.usage_limit === "") {
+      update.usage_limit = null
     } else {
-      const maxUses = Number(body.max_uses)
-      if (!Number.isFinite(maxUses) || maxUses <= 0) {
-        return NextResponse.json({ error: "Limite de usos deve ser maior que zero ou vazio para ilimitado." }, { status: 400 })
+      const usageLimit = Number(body.usage_limit)
+      if (!Number.isFinite(usageLimit) || usageLimit < 1) {
+        return NextResponse.json({ error: "Limite de uso deve ser um número positivo." }, { status: 400 })
       }
-      update.max_uses = maxUses
+      update.usage_limit = usageLimit
     }
   }
 
-  if (body.expires_at !== undefined) {
-    update.expires_at = typeof body.expires_at === "string" && body.expires_at ? body.expires_at : null
+  if (body.expiration_date !== undefined) {
+    update.expiration_date = typeof body.expiration_date === "string" && body.expiration_date ? body.expiration_date : null
   }
 
-  if (typeof body.active === "boolean") update.active = body.active
+  if (body.status === "active" || body.status === "inactive") update.status = body.status
 
   if (Object.keys(update).length === 0) {
     return NextResponse.json({ error: "Nenhum campo válido para atualizar." }, { status: 400 })

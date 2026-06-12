@@ -12,7 +12,7 @@ export async function GET(request: NextRequest) {
   const supabase = createAdminClient()
   let query = supabase
     .from("coupons")
-    .select("id, code, discount_percent, max_uses, uses_count, discount_total, expires_at, active, created_at")
+    .select("id, code, discount, discount_type, usage_count, usage_limit, expiration_date, status, total_discounted, created_at")
     .order("created_at", { ascending: false })
 
   if (q) query = query.ilike("code", `%${q}%`)
@@ -34,26 +34,32 @@ export async function POST(request: NextRequest) {
   const body = await request.json().catch(() => ({}))
 
   const code = typeof body.code === "string" ? body.code.trim().toUpperCase() : ""
-  const discountPercent = Number(body.discount_percent)
-  const maxUses = body.max_uses === null || body.max_uses === "" || body.max_uses === undefined ? null : Number(body.max_uses)
-  const expiresAt = typeof body.expires_at === "string" && body.expires_at ? body.expires_at : null
+  const discountType = body.discount_type === "fixed" ? "fixed" : "percentage"
+  const discount = Number(body.discount)
+  const usageLimit = body.usage_limit === null || body.usage_limit === "" || body.usage_limit === undefined ? null : Number(body.usage_limit)
+  const expirationDate = typeof body.expiration_date === "string" && body.expiration_date ? body.expiration_date : null
+  const status = body.status === "inactive" ? "inactive" : "active"
 
-  if (!code) {
-    return NextResponse.json({ error: "Informe o código do cupom." }, { status: 400 })
+  if (code.length < 3) {
+    return NextResponse.json({ error: "Código deve ter pelo menos 3 caracteres." }, { status: 400 })
   }
 
-  if (!Number.isFinite(discountPercent) || discountPercent <= 0 || discountPercent > 100) {
-    return NextResponse.json({ error: "Desconto deve ser um número entre 1 e 100." }, { status: 400 })
+  if (!Number.isFinite(discount) || discount <= 0) {
+    return NextResponse.json({ error: "Desconto deve ser maior que zero." }, { status: 400 })
   }
 
-  if (maxUses !== null && (!Number.isFinite(maxUses) || maxUses <= 0)) {
-    return NextResponse.json({ error: "Limite de usos deve ser maior que zero ou vazio para ilimitado." }, { status: 400 })
+  if (discountType === "percentage" && discount > 100) {
+    return NextResponse.json({ error: "Desconto percentual não pode passar de 100%." }, { status: 400 })
+  }
+
+  if (usageLimit !== null && (!Number.isFinite(usageLimit) || usageLimit < 1)) {
+    return NextResponse.json({ error: "Limite de uso deve ser um número positivo." }, { status: 400 })
   }
 
   const supabase = createAdminClient()
   const { error } = await supabase
     .from("coupons")
-    .insert({ code, discount_percent: discountPercent, max_uses: maxUses, expires_at: expiresAt })
+    .insert({ code, discount, discount_type: discountType, usage_limit: usageLimit, expiration_date: expirationDate, status })
 
   if (error) {
     if (error.code === "23505") {
