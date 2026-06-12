@@ -76,16 +76,23 @@ export async function GET(request: NextRequest) {
   const orders = data ?? []
 
   const userIds = [...new Set(orders.map(o => o.user_id).filter((id): id is string => Boolean(id)))]
-  const customers = new Map<string, { name: string | null; email: string | null }>()
+  const customers = new Map<string, { name: string | null; email: string | null; game_id: string | null }>()
 
   if (userIds.length) {
-    const { data: profiles } = await supabase.from("profiles").select("id, name, nick").in("id", userIds)
-    for (const p of profiles ?? []) customers.set(p.id, { name: p.name ?? p.nick ?? null, email: null })
+    const { data: profiles } = await supabase.from("profiles").select("id, name, nick, game_id").in("id", userIds)
+    for (const p of profiles ?? []) customers.set(p.id, { name: p.name ?? p.nick ?? null, email: null, game_id: p.game_id ?? null })
 
     await Promise.all(userIds.map(async id => {
       const { data: userData } = await supabase.auth.admin.getUserById(id)
-      const existing = customers.get(id) ?? { name: null, email: null }
-      customers.set(id, { ...existing, email: userData?.user?.email ?? null })
+      const authUser = userData?.user
+      const existing = customers.get(id) ?? { name: null, email: null, game_id: null }
+      const metadataName = typeof authUser?.user_metadata?.name === "string" ? authUser.user_metadata.name : null
+      const emailPrefix = authUser?.email?.split("@")[0] ?? null
+      customers.set(id, {
+        ...existing,
+        name: existing.name ?? metadataName ?? emailPrefix,
+        email: authUser?.email ?? null,
+      })
     }))
   }
 
@@ -95,6 +102,7 @@ export async function GET(request: NextRequest) {
       ...order,
       customer_name: customer?.name ?? null,
       customer_email: customer?.email ?? null,
+      customer_game_id: customer?.game_id ?? null,
     }
   })
 
