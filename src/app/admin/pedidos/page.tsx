@@ -7,6 +7,7 @@ type OrderItem = {
   name: string
   type?: string | null
   rarity?: string | null
+  image?: string | null
   quantity: number
   mode?: "points" | "cash"
   pointsCost?: number
@@ -27,6 +28,7 @@ type Order = {
   cancelled_at: string | null
   customer_name: string | null
   customer_email: string | null
+  customer_game_id: string | null
 }
 
 const PAGE_SIZE = 20
@@ -95,6 +97,11 @@ function orderTotal(order: Order) {
 function itemTotal(item: OrderItem) {
   if (item.mode === "points") return `${(item.pointsCost ?? 0).toLocaleString("pt-BR")} pontos`
   return `R$ ${formatNumber(item.lineTotal ?? (item.price ?? 0) * item.quantity)}`
+}
+
+function resolveImage(image?: string | null) {
+  if (!image) return undefined
+  return image.startsWith("http") ? image : `/${image}`
 }
 
 export default function AdminPedidosPage() {
@@ -228,6 +235,7 @@ export default function AdminPedidosPage() {
             <p className="modal-kicker">Pedido {selectedOrder.id.slice(0, 8).toUpperCase()}</p>
             <h2 style={{ fontSize: "20px" }}>{selectedOrder.customer_name ?? "Sem nome"}</h2>
             <p style={{ margin: "-10px 0 0", color: "var(--muted)", fontSize: "13px" }}>{selectedOrder.customer_email ?? "—"}</p>
+            <p style={{ margin: "-10px 0 0", color: "var(--muted)", fontSize: "13px" }}>ID do jogo: {selectedOrder.customer_game_id ?? "—"}</p>
 
             <div style={{ display: "flex", gap: "8px", flexWrap: "wrap" }}>
               <span style={badgeStyle(statusColors[selectedOrder.status] ?? "var(--muted)")}>
@@ -251,8 +259,15 @@ export default function AdminPedidosPage() {
               <p style={{ margin: "0 0 8px", fontSize: "11px", fontWeight: 950, textTransform: "uppercase", color: "var(--cyan)" }}>Itens</p>
               <div style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
                 {selectedOrder.items.map((item, idx) => (
-                  <div key={idx} style={{ display: "flex", justifyContent: "space-between", gap: "10px", fontSize: "12px", borderBottom: "1px solid rgba(255,255,255,0.05)", paddingBottom: "4px" }}>
-                    <span>{item.quantity}x {item.name}</span>
+                  <div key={idx} style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "10px", fontSize: "12px", borderBottom: "1px solid rgba(255,255,255,0.05)", paddingBottom: "4px" }}>
+                    <span style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+                      {resolveImage(item.image) ? (
+                        <img src={resolveImage(item.image)} alt={item.name} style={{ width: "24px", height: "24px", objectFit: "contain" }} />
+                      ) : (
+                        <span style={{ width: "24px", height: "24px", border: "1px solid var(--line)", display: "inline-block" }} />
+                      )}
+                      {item.quantity}x {item.name}
+                    </span>
                     <span style={{ color: "var(--muted)", whiteSpace: "nowrap" }}>{itemTotal(item)}</span>
                   </div>
                 ))}
