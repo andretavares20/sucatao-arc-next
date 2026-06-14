@@ -2,14 +2,14 @@
 
 import Link from "next/link"
 import { usePathname } from "next/navigation"
-import { Bot, Hammer, Home, LogIn, Map, Package, Recycle, Repeat2, Settings, Shield, ShoppingCart, User } from "lucide-react"
+import { Bot, Hammer, Home, LogIn, Map, Recycle, Repeat2, Settings, Shield, ShoppingCart, Store, User } from "lucide-react"
 import { useCart } from "@/lib/cart-context"
 import { BrandMark } from "./brand-mark"
 import { LogoutButton } from "./logout-button"
 
 const navLinks = [
   { href: "/", label: "Início", icon: Home },
-  { href: "/itens", label: "Itens", icon: Package },
+  { href: "/loja", label: "Loja", icon: Store },
   { href: "/trades", label: "Trades", icon: Repeat2 },
   { href: "/arcs", label: "ARCs", icon: Bot },
   { href: "/crafting", label: "Crafting", icon: Hammer },
