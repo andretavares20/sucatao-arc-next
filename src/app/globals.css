@@ -313,7 +313,7 @@ select {
 
 .news-grid {
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
   gap: 16px;
 }
 
@@ -476,7 +476,7 @@ select {
 
 .category-row {
   display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
   gap: 16px;
 }
 
@@ -950,7 +950,7 @@ select {
 
 .store-highlight-grid {
   display: grid;
-  grid-template-columns: repeat(5, minmax(0, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
   gap: 14px;
 }
 
@@ -1082,7 +1082,7 @@ select {
 
 .store-category-row {
   display: grid;
-  grid-template-columns: repeat(5, minmax(0, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
   gap: 14px;
 }
 
@@ -5601,16 +5601,6 @@ button.utility-chip:focus-visible {
     border: 1px solid var(--stroke);
   }
 
-  .news-grid,
-  .category-row {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-
-  .store-highlight-grid,
-  .store-category-row {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-  }
-
   .stats-grid,
   .intel-panel,
   .admin-metric-grid,
@@ -5805,10 +5795,6 @@ button.utility-chip:focus-visible {
   .stats-grid,
   .intel-panel,
   .item-grid,
-  .news-grid,
-  .category-row,
-  .store-highlight-grid,
-  .store-category-row,
   .admin-metric-grid,
   .admin-status-grid,
   .admin-chart-meta,
