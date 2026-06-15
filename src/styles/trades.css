@@ -167,18 +167,10 @@
 
 .store-tab-indicator {
   position: absolute;
-  bottom: 1px;
-  height: 2px;
-  border-radius: 1px;
-  background: #f5090d;
-}
-
-.store-tab-indicator {
-  position: absolute;
   bottom: -1px;
   height: 2px;
   border-radius: 1px;
-  background: #e8503a;
+  background: #f5090d;
   transition: left 0.25s ease, width 0.25s ease;
 }
 
@@ -825,6 +817,72 @@
   filter: brightness(1.1);
 }
 
+.trade-confirm-accept:disabled {
+  opacity: 0.5;
+  filter: none;
+  cursor: default;
+}
+
+.trade-create-modal {
+  width: min(640px, 100%);
+}
+
+.trade-create-body {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.trade-create-side {
+  display: flex;
+  flex: 1 1 0;
+  flex-direction: column;
+  gap: 10px;
+  min-width: 0;
+}
+
+.trade-create-swap {
+  flex-shrink: 0;
+  margin-top: 30px;
+}
+
+.trade-create-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.trade-create-field span {
+  color: var(--gray-500);
+  font-size: 10px;
+  font-weight: 950;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.trade-create-field input,
+.trade-create-field select {
+  border: 1px solid var(--stroke-strong);
+  border-radius: 6px;
+  background: var(--surface-3);
+  color: var(--paper);
+  padding: 10px 12px;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.trade-create-field input::placeholder {
+  color: var(--gray-500);
+  font-weight: 400;
+}
+
+.trade-create-field input:focus,
+.trade-create-field select:focus {
+  outline: none;
+  border-color: #f5090d;
+}
+
 .my-trades-actions {
   flex-direction: column;
   align-items: flex-end;
@@ -1044,5 +1102,13 @@
     border-left: none;
     border-radius: 12px;
     border: 1px solid var(--stroke);
+  }
+
+  .trade-create-body {
+    flex-direction: column;
+  }
+
+  .trade-create-swap {
+    display: none;
   }
 }

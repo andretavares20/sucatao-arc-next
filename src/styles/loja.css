@@ -305,15 +305,7 @@
 }
 
 .store-tab.active {
-  color: #e8503a;
-}
-
-.store-tab-indicator {
-  position: absolute;
-  bottom: 1px;
-  height: 2px;
-  border-radius: 1px;
-  background: #f5090d;
+  color: #f5090d;
 }
 
 .store-tab-indicator {
@@ -321,7 +313,7 @@
   bottom: -1px;
   height: 2px;
   border-radius: 1px;
-  background: #e8503a;
+  background: #f5090d;
   transition: left 0.25s ease, width 0.25s ease;
 }
 
